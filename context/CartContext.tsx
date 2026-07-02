@@ -12,9 +12,9 @@ import Cookies from "js-cookie";
 import { createClient, OAuthStrategy, type Tokens } from "@wix/sdk";
 import { currentCart } from "@wix/ecom";
 import { redirects } from "@wix/redirects";
+import { WIX_SESSION_COOKIE } from "@/app/utils/constants";
 
-const WIX_SESSION_COOKIE = "wixSession";
-const WIX_STORES_APP_ID = "1380b703-ce81-ff05-f115-39571d94dfcd";
+const WIX_STORES_APP_ID = "215238eb-22a5-4c36-9e7b-e7c08025e04e";
 
 function getBrowserClient() {
   const raw = Cookies.get(WIX_SESSION_COOKIE);
@@ -23,7 +23,7 @@ function getBrowserClient() {
   const client = createClient({
     modules: { currentCart, redirects },
     auth: OAuthStrategy({
-      clientId: process.env.WIX_CLIENT_ID ?? "",
+      clientId: process.env.NEXT_PUBLIC_WIX_CLIENT_ID!,
       tokens,
     }),
   });
@@ -54,7 +54,7 @@ interface CartContextType {
   cartOpen: boolean;
   addToCart: (
     productId: string,
-    variantId?: string,
+    catalogOptions?: Record<string, unknown> | undefined,
     quantity?: number,
   ) => Promise<void>;
   removeFromCart: (lineItemId: string) => Promise<void>;
@@ -78,13 +78,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     ) ?? 0;
 
   const fetchCart = useCallback(async () => {
-    try {
-      const client = getBrowserClient();
-      const cartData = await client.currentCart.getCurrentCart();
-      setCart(cartData ?? null);
-    } catch {
-      // No cart yet — that's fine
-    }
+    const client = getBrowserClient();
+    const cartData = await client.currentCart.getCurrentCart();
+    setCart(cartData ?? null);
+    persistTokens(client);
   }, []);
 
   useEffect(() => {
@@ -93,7 +90,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = async (
     productId: string,
-    variantId?: string,
+    catalogOptions: Record<string, unknown> | undefined = undefined,
     quantity = 1,
   ) => {
     setLoading(true);
@@ -105,7 +102,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             catalogReference: {
               catalogItemId: productId,
               appId: WIX_STORES_APP_ID,
-              options: variantId ? { variantId } : {},
+              ...(catalogOptions && { options: catalogOptions as Record<string, string> }),
             },
             quantity,
           },

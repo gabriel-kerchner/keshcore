@@ -79,11 +79,7 @@ export default function ProductCard({ product }: Props) {
             )}
           </div>
 
-          <AddToCartButton
-            productId={product._id ?? ''}
-            productName={product.name ?? ''}
-            inStock={inStock}
-          />
+          <AddToCartButton product={product} inStock={inStock} />
         </div>
       </div>
     </Link>

@@ -26,6 +26,7 @@ export interface WixProduct {
     inventoryStatus?: string;
   };
   productType?: string;
+  manageVariants?: boolean;
   variants?: Array<{
     _id?: string;
     choices?: Record<string, string>;

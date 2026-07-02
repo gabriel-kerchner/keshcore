@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient, OAuthStrategy } from "@wix/sdk";
-
-const WIX_SESSION_COOKIE = "wixSession";
+import { WIX_SESSION_COOKIE } from "@/app/utils/constants";
 
 export async function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get(WIX_SESSION_COOKIE);
@@ -10,7 +9,7 @@ export async function middleware(request: NextRequest) {
     try {
       const wixClient = createClient({
         auth: OAuthStrategy({
-          clientId: process.env.WIX_CLIENT_ID ?? "",
+          clientId: process.env.NEXT_PUBLIC_WIX_CLIENT_ID!,
         }),
       });
       const tokens = await wixClient.auth.generateVisitorTokens();

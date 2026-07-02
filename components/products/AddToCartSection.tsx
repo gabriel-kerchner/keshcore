@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { ShoppingCart, Check } from 'lucide-react';
-import { useCart } from '@/context/CartContext';
-import type { WixProduct } from '@/lib/types';
+import { useState } from "react";
+import { ShoppingCart, Check } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import type { WixProduct } from "@/lib/types";
 
 interface Props {
   product: WixProduct;
@@ -12,14 +12,39 @@ interface Props {
 export default function AddToCartSection({ product }: Props) {
   const { addToCart, loading } = useCart();
   const [quantity, setQuantity] = useState(1);
-  const [selectedVariant, setSelectedVariant] = useState<string | undefined>();
+  const [selectedOptions, setSelectedOptions] = useState<
+    Record<string, string>
+  >({});
   const [added, setAdded] = useState(false);
 
   const inStock = product.stock?.inStock !== false;
+  const opts = product.productOptions ?? [];
+  const hasOptions = opts.length > 0;
+
+  const allOptionsSelected =
+    !hasOptions || opts.every((opt) => opt.name && selectedOptions[opt.name]);
+
+  const buildCatalogOptions = (): Record<string, unknown> | undefined => {
+    if (!hasOptions) return undefined;
+
+    if (product.manageVariants) {
+      const match = product.variants?.find(
+        (v) =>
+          v.choices &&
+          opts.every(
+            (opt) =>
+              opt.name && v.choices![opt.name] === selectedOptions[opt.name],
+          ),
+      );
+      return match?._id ? { variantId: match._id } : undefined;
+    }
+
+    return { options: selectedOptions };
+  };
 
   const handleAddToCart = async () => {
-    if (!product._id) return;
-    await addToCart(product._id, selectedVariant, quantity);
+    if (!product._id || !allOptionsSelected) return;
+    await addToCart(product._id, buildCatalogOptions(), quantity);
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   };
@@ -27,7 +52,7 @@ export default function AddToCartSection({ product }: Props) {
   return (
     <div className="flex flex-col gap-6">
       {/* Variants */}
-      {(product.productOptions ?? []).map((opt) => (
+      {opts.map((opt) => (
         <div key={opt.name} className="space-y-2">
           <label className="font-orbitron text-[0.65rem] tracking-widest text-cyber-muted uppercase">
             {opt.name}
@@ -36,11 +61,16 @@ export default function AddToCartSection({ product }: Props) {
             {opt.choices?.map((choice) => (
               <button
                 key={choice.value}
-                onClick={() => setSelectedVariant(choice.value)}
+                onClick={() =>
+                  setSelectedOptions((prev) => ({
+                    ...prev,
+                    [opt.name!]: choice.value!,
+                  }))
+                }
                 className={`cyber-tag transition-all ${
-                  selectedVariant === choice.value
-                    ? 'text-cyber-cyan border-cyber-cyan/60'
-                    : 'text-cyber-muted border-cyber-muted/20 hover:border-cyber-cyan/40 hover:text-cyber-cyan'
+                  selectedOptions[opt.name!] === choice.value
+                    ? "text-cyber-cyan border-cyber-cyan/60"
+                    : "text-cyber-muted border-cyber-muted/20 hover:border-cyber-cyan/40 hover:text-cyber-cyan"
                 }`}
               >
                 {choice.description ?? choice.value}
@@ -77,7 +107,7 @@ export default function AddToCartSection({ product }: Props) {
       {/* Add to cart */}
       <button
         onClick={handleAddToCart}
-        disabled={!inStock || loading}
+        disabled={!inStock || loading || !allOptionsSelected}
         className="cyber-btn cyber-btn-primary cyber-btn-lg w-full sm:w-auto justify-center disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {added ? (
@@ -88,7 +118,11 @@ export default function AddToCartSection({ product }: Props) {
         ) : (
           <>
             <ShoppingCart className="w-4 h-4 mr-2" />
-            {loading ? 'ADDING...' : 'ADD TO CART'}
+            {loading
+              ? "ADDING..."
+              : !allOptionsSelected
+                ? "SELECT OPTIONS"
+                : "ADD TO CART"}
           </>
         )}
       </button>
