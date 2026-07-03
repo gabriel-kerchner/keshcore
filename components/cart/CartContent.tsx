@@ -7,7 +7,7 @@ import { useCart } from '@/context/CartContext';
 import { formatGBP, getProductImageUrl } from '@/lib/utils';
 
 export default function CartContent() {
-  const { cart, removeFromCart, updateQuantity, proceedToCheckout, loading } = useCart();
+  const { cart, removeFromCart, updateQuantity, proceedToCheckout, loading, checkoutError } = useCart();
   const lineItems = cart?.lineItems ?? [];
 
   const subtotalAmount = lineItems.reduce((acc: number, item) => {
@@ -124,6 +124,12 @@ export default function CartContent() {
             <span className="font-orbitron text-xs tracking-widest text-cyber-muted">TOTAL</span>
             <span className="font-orbitron text-2xl font-black text-cyber-cyan">{subtotal}</span>
           </div>
+
+          {checkoutError && (
+            <p className="text-cyber-pink text-xs text-center mb-4" role="alert">
+              {checkoutError}
+            </p>
+          )}
 
           <button
             onClick={proceedToCheckout}

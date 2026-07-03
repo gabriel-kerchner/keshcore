@@ -8,8 +8,17 @@ import { useCart } from '@/context/CartContext';
 import { getProductImageUrl } from '@/lib/utils';
 
 export default function CartDrawer() {
-  const { cart, cartItemCount, cartOpen, closeCart, removeFromCart, updateQuantity, proceedToCheckout, loading } =
-    useCart();
+  const {
+    cart,
+    cartItemCount,
+    cartOpen,
+    closeCart,
+    removeFromCart,
+    updateQuantity,
+    proceedToCheckout,
+    loading,
+    checkoutError,
+  } = useCart();
 
   // Close on Escape
   useEffect(() => {
@@ -187,6 +196,12 @@ export default function CartDrawer() {
             <p className="text-cyber-muted/60 text-xs mb-4">
               Shipping & taxes calculated at checkout
             </p>
+
+            {checkoutError && (
+              <p className="text-cyber-pink text-xs mb-4" role="alert">
+                {checkoutError}
+              </p>
+            )}
 
             {/* Checkout button */}
             <button

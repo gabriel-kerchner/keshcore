@@ -8,42 +8,9 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import Cookies from "js-cookie";
-import { createClient, OAuthStrategy, type Tokens } from "@wix/sdk";
 import { currentCart } from "@wix/ecom";
-import { redirects } from "@wix/redirects";
-import { WIX_SESSION_COOKIE } from "@/app/utils/constants";
-
-const WIX_STORES_APP_ID = "215238eb-22a5-4c36-9e7b-e7c08025e04e";
-
-function getBrowserClient() {
-  const raw = Cookies.get(WIX_SESSION_COOKIE);
-  const tokens = raw ? (JSON.parse(raw) as Tokens) : undefined;
-
-  const client = createClient({
-    modules: { currentCart, redirects },
-    auth: OAuthStrategy({
-      clientId: process.env.NEXT_PUBLIC_WIX_CLIENT_ID!,
-      tokens,
-    }),
-  });
-
-  return client;
-}
-
-function persistTokens(client: ReturnType<typeof getBrowserClient>) {
-  try {
-    const tokens = client.auth.getTokens();
-    if (tokens?.refreshToken?.value) {
-      Cookies.set(WIX_SESSION_COOKIE, JSON.stringify(tokens), {
-        expires: 30,
-        path: "/",
-      });
-    }
-  } catch {
-    // ignore
-  }
-}
+import { getBrowserClient, persistTokens, getSiteUrl } from "@/lib/wix-client";
+import { WIX_STORES_APP_ID } from "@/app/utils/constants";
 
 type Cart = currentCart.Cart;
 
@@ -52,6 +19,7 @@ interface CartContextType {
   cartItemCount: number;
   loading: boolean;
   cartOpen: boolean;
+  checkoutError: string | null;
   addToCart: (
     productId: string,
     catalogOptions?: Record<string, unknown> | undefined,
@@ -62,6 +30,7 @@ interface CartContextType {
   proceedToCheckout: () => Promise<void>;
   openCart: () => void;
   closeCart: () => void;
+  clearCheckoutError: () => void;
 }
 
 const CartContext = createContext<CartContextType>({} as CartContextType);
@@ -70,6 +39,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const cartItemCount =
     cart?.lineItems?.reduce(
@@ -102,7 +72,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
             catalogReference: {
               catalogItemId: productId,
               appId: WIX_STORES_APP_ID,
-              ...(catalogOptions && { options: catalogOptions as Record<string, string> }),
+              ...(catalogOptions && {
+                options: catalogOptions as Record<string, string>,
+              }),
             },
             quantity,
           },
@@ -149,6 +121,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const proceedToCheckout = async () => {
+    setCartOpen(false);
+    setCheckoutError(null);
     setLoading(true);
     try {
       const client = getBrowserClient();
@@ -159,21 +133,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       if (!checkoutId) throw new Error("No checkoutId returned");
 
+      const siteUrl = getSiteUrl();
       const { redirectSession } = await client.redirects.createRedirectSession({
         ecomCheckout: { checkoutId },
         callbacks: {
-          postFlowUrl:
-            process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin,
-          thankYouPageUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin}/thank-you`,
+          postFlowUrl: siteUrl,
+          thankYouPageUrl: `${siteUrl}/thank-you`,
+          cartPageUrl: `${siteUrl}/cart`,
         },
       });
 
       if (redirectSession?.fullUrl) {
         window.location.href = redirectSession.fullUrl;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("[proceedToCheckout]", err);
-    } finally {
+      if (
+        err?.details?.applicationError?.code ===
+        "SITE_MUST_ACCEPT_PAYMENTS_TO_CREATE_CHECKOUT"
+      ) {
+        setCheckoutError(
+          "This store isn't set up to accept payments yet. Please check back soon.",
+        );
+      } else {
+        setCheckoutError(
+          "Something went wrong starting checkout. Please try again.",
+        );
+      }
       setLoading(false);
     }
   };
@@ -185,12 +171,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
         cartItemCount,
         loading,
         cartOpen,
+        checkoutError,
         addToCart,
         removeFromCart,
         updateQuantity,
         proceedToCheckout,
         openCart: () => setCartOpen(true),
         closeCart: () => setCartOpen(false),
+        clearCheckoutError: () => setCheckoutError(null),
       }}
     >
       {children}
