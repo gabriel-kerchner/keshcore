@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Zap, Search } from 'lucide-react';
 import CartButton from './CartButton';
-import AccountButton from './AccountButton';
 import MobileMenu from './MobileMenu';
 
 const navLinks = [
@@ -58,7 +57,6 @@ export default function Header() {
               <Search className="w-4 h-4" />
             </Link>
 
-            <AccountButton />
             <CartButton />
             <MobileMenu />
           </div>

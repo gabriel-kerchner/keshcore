@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Orbitron, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
-import { AuthProvider } from "@/context/AuthContext";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
@@ -67,14 +66,12 @@ export default function RootLayout({
       className={`${orbitron.variable} ${spaceGrotesk.variable}`}
     >
       <body className="bg-cyber-black text-cyber-text font-space antialiased">
-        <AuthProvider>
-          <CartProvider>
-            <Header />
-            <main className="min-h-screen pt-16">{children}</main>
-            <Footer />
-            <CartDrawer />
-          </CartProvider>
-        </AuthProvider>
+        <CartProvider>
+          <Header />
+          <main className="min-h-screen pt-16">{children}</main>
+          <Footer />
+          <CartDrawer />
+        </CartProvider>
         <Analytics />
       </body>
     </html>

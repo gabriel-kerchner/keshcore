@@ -53,10 +53,6 @@ export function persistTokens(client: ReturnType<typeof createBrowserClient>) {
   }
 }
 
-export function clearTokens() {
-  Cookies.remove(WIX_SESSION_COOKIE, { path: "/" });
-}
-
 export function getSiteUrl() {
   return process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
 }
