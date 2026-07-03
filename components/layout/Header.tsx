@@ -2,14 +2,7 @@ import Link from 'next/link';
 import { Zap, Search } from 'lucide-react';
 import CartButton from './CartButton';
 import MobileMenu from './MobileMenu';
-
-const navLinks = [
-  { href: '/products', label: 'ALL PRODUCTS' },
-  { href: '/products?category=gaming', label: 'GAMING' },
-  { href: '/products?category=pc-parts', label: 'PC PARTS' },
-  { href: '/products?category=storage', label: 'STORAGE' },
-  { href: '/products?category=monitors', label: 'MONITORS' },
-];
+import { categories, getCategoryHref } from '@/lib/categories';
 
 export default function Header() {
   return (
@@ -35,14 +28,53 @@ export default function Header() {
 
           {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-7">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="font-orbitron text-[0.65rem] tracking-[0.18em] text-cyber-muted hover:text-cyber-cyan transition-colors duration-200 hover:drop-shadow-[0_0_6px_rgba(0,245,255,0.6)]"
-              >
-                {link.label}
-              </Link>
+            <Link
+              href="/products"
+              className="font-orbitron text-[0.65rem] tracking-[0.18em] text-cyber-muted hover:text-cyber-cyan transition-colors duration-200 hover:drop-shadow-[0_0_6px_rgba(0,245,255,0.6)]"
+            >
+              ALL PRODUCTS
+            </Link>
+
+            {categories.map((cat) => (
+              <div key={cat.slug} className="relative group py-6 -my-6">
+                <Link
+                  href={getCategoryHref(cat)}
+                  className="font-orbitron text-[0.65rem] tracking-[0.18em] text-cyber-muted hover:text-cyber-cyan transition-colors duration-200 hover:drop-shadow-[0_0_6px_rgba(0,245,255,0.6)]"
+                >
+                  {cat.name.toUpperCase()}
+                </Link>
+
+                {cat.children && cat.children.length > 0 && (
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 hidden group-hover:block z-50">
+                    <div className="flex gap-8 bg-cyber-dark/98 backdrop-blur-xl border border-cyber-cyan/15 shadow-[0_10px_40px_rgba(0,0,0,0.5)] p-6 whitespace-nowrap">
+                      {cat.children.map((child) => (
+                        <div key={child.slug} className="min-w-[150px]">
+                          <Link
+                            href={getCategoryHref(child)}
+                            className="font-orbitron text-[0.65rem] tracking-wide text-cyber-cyan/90 hover:text-cyber-cyan transition-colors block mb-2.5"
+                          >
+                            {child.name}
+                          </Link>
+                          {child.children && child.children.length > 0 && (
+                            <ul className="space-y-2 border-l border-cyber-cyan/10 pl-3">
+                              {child.children.map((grandchild) => (
+                                <li key={grandchild.slug}>
+                                  <Link
+                                    href={getCategoryHref(grandchild)}
+                                    className="text-cyber-muted text-xs hover:text-cyber-text transition-colors"
+                                  >
+                                    {grandchild.name}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
           </nav>
 

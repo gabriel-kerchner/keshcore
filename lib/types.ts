@@ -26,6 +26,7 @@ export interface WixProduct {
     inventoryStatus?: string;
   };
   productType?: string;
+  collectionIds?: string[];
   manageVariants?: boolean;
   variants?: Array<{
     _id?: string;
@@ -34,7 +35,8 @@ export interface WixProduct {
     variant?: {
       priceData?: {
         price?: number;
-        formatted?: { price?: string };
+        discountedPrice?: number;
+        formatted?: { price?: string; discountedPrice?: string };
       };
     };
   }>;

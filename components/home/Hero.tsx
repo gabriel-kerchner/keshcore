@@ -45,7 +45,7 @@ export default function Hero() {
           <p className="text-cyber-muted font-space text-lg sm:text-xl max-w-2xl leading-relaxed mb-10 animate-fade-in">
             Premium gaming peripherals, PC components, and SSDs — handpicked for UK
             gamers and tech enthusiasts.{' '}
-            <span className="text-cyber-cyan font-medium">Next-day delivery</span> across the
+            <span className="text-cyber-cyan font-medium">Free & Express delivery</span> across the
             United Kingdom.
           </p>
 
@@ -63,9 +63,9 @@ export default function Hero() {
           {/* Trust badges */}
           <div className="flex flex-wrap gap-6 sm:gap-10 animate-fade-in">
             {[
-              { icon: Truck, text: 'Next Day UK Delivery', sub: 'Order before 3pm' },
+              { icon: Truck, text: 'Free & Express UK Delivery', sub: 'DHL: 3-8 or 2-5 days' },
               { icon: Shield, text: 'Official UK Warranty', sub: 'All products covered' },
-              { icon: Zap, text: 'Free Shipping', sub: 'On orders over £50' },
+              { icon: Zap, text: 'DHL Express £5', sub: '2-5 Business Days' },
               { icon: Star, text: 'Expert Support', sub: 'Real gamers, real advice' },
             ].map(({ icon: Icon, text, sub }) => (
               <div key={text} className="flex items-center gap-3">

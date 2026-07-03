@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import { Gamepad2, Cpu, HardDrive, Monitor, MousePointer, Server } from 'lucide-react';
+import { Gamepad2, Cpu, HardDrive, Monitor, MousePointer, Tag } from 'lucide-react';
 
 const categories = [
   {
     id: 'gaming',
-    name: 'Gaming Peripherals',
+    name: 'Gaming',
     description: 'Mice, keyboards, headsets & more',
     icon: Gamepad2,
     color: 'cyan' as const,
@@ -12,7 +12,7 @@ const categories = [
   },
   {
     id: 'pc-parts',
-    name: 'PC Components',
+    name: 'PC Parts',
     description: 'CPUs, GPUs, RAM, motherboards',
     icon: Cpu,
     color: 'pink' as const,
@@ -20,8 +20,8 @@ const categories = [
   },
   {
     id: 'storage',
-    name: 'Storage & SSDs',
-    description: 'NVMe, SATA SSD, HDD',
+    name: 'Storage',
+    description: 'SSDs, HDDs & memory cards',
     icon: HardDrive,
     color: 'purple' as const,
     href: '/products?category=storage',
@@ -43,12 +43,12 @@ const categories = [
     href: '/products?category=accessories',
   },
   {
-    id: 'pre-built',
-    name: 'Pre-Built PCs',
-    description: 'Ready to game out of the box',
-    icon: Server,
+    id: 'deals',
+    name: 'Deals',
+    description: 'Sale, new arrivals & offers',
+    icon: Tag,
     color: 'purple' as const,
-    href: '/products?category=pre-built',
+    href: '/products?category=deals',
   },
 ];
 

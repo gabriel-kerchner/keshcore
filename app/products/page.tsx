@@ -1,19 +1,22 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import ProductGrid from '@/components/products/ProductGrid';
-import { getProducts } from '@/lib/products';
+import DebugLog from '@/components/DebugLog';
+import { getProducts, getCollectionIdsBySlugs } from '@/lib/products';
+import { getCategoryName, getCategoryAndDescendantSlugs } from '@/lib/categories';
 import { SlidersHorizontal } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'All Products',
   description:
-    'Shop our full range of gaming peripherals, PC components, SSDs, monitors and accessories. Free UK delivery on orders over £50.',
+    'Shop our full range of gaming peripherals, PC components, SSDs, monitors and accessories. Free & Express UK delivery available.',
 };
 
 export const revalidate = 60;
 
 const sortOptions = [
   { value: 'newest', label: 'NEWEST' },
+  { value: 'best-sellers', label: 'BEST SELLERS' },
   { value: 'price-asc', label: 'PRICE: LOW → HIGH' },
   { value: 'price-desc', label: 'PRICE: HIGH → LOW' },
   { value: 'name', label: 'NAME A–Z' },
@@ -23,6 +26,8 @@ interface SearchParams {
   category?: string;
   sort?: string;
   q?: string;
+  sale?: string;
+  maxPrice?: string;
 }
 
 export default async function ProductsPage({
@@ -30,18 +35,31 @@ export default async function ProductsPage({
 }: {
   searchParams: SearchParams;
 }) {
-  const { category, sort = 'newest', q } = searchParams;
+  const { category, sort = 'newest', q, sale, maxPrice } = searchParams;
 
-  const products = await getProducts({ limit: 50 });
+  const collectionIds = category
+    ? await getCollectionIdsBySlugs(getCategoryAndDescendantSlugs(category))
+    : undefined;
+
+  const products =
+    category && collectionIds?.length === 0
+      ? []
+      : await getProducts({ limit: 50, collectionIds });
 
   const heading = category
-    ? category.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+    ? getCategoryName(category) ??
+      category.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
     : q
     ? `Search: "${q}"`
+    : sale === 'true'
+    ? 'Sale'
+    : maxPrice
+    ? `Under £${maxPrice}`
     : 'All Products';
 
   return (
     <div className="min-h-screen bg-cyber-black">
+      <DebugLog label="products" data={products} />
       {/* Page header */}
       <div className="relative py-16 border-b border-cyber-cyan/8 overflow-hidden">
         <div className="cyber-bg-grid absolute inset-0 opacity-50" />
@@ -50,7 +68,7 @@ export default async function ProductsPage({
           <div className="flex items-center gap-3 mb-3">
             <div className="h-px w-8 bg-cyber-cyan opacity-60" />
             <span className="font-orbitron text-[0.6rem] tracking-[0.35em] text-cyber-cyan/70 uppercase">
-              {category ? 'Category' : 'Shop'}
+              {category || sale === 'true' || maxPrice ? 'Category' : 'Shop'}
             </span>
           </div>
           <h1 className="font-orbitron font-black text-3xl sm:text-4xl text-cyber-text">

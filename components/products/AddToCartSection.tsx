@@ -24,19 +24,40 @@ export default function AddToCartSection({ product }: Props) {
   const allOptionsSelected =
     !hasOptions || opts.every((opt) => opt.name && selectedOptions[opt.name]);
 
+  const selectedVariant =
+    hasOptions && product.manageVariants
+      ? product.variants?.find(
+          (v) =>
+            v.choices &&
+            opts.every(
+              (opt) =>
+                opt.name && v.choices![opt.name] === selectedOptions[opt.name],
+            ),
+        )
+      : undefined;
+
+  const price = selectedVariant
+    ? selectedVariant.variant?.priceData?.formatted?.discountedPrice ??
+      selectedVariant.variant?.priceData?.formatted?.price ??
+      "£0.00"
+    : product.price?.formatted?.discountedPrice ??
+      product.price?.formatted?.price ??
+      "£0.00";
+  const wasPrice = selectedVariant
+    ? selectedVariant.variant?.priceData?.formatted?.discountedPrice
+      ? selectedVariant.variant?.priceData?.formatted?.price
+      : undefined
+    : product.price?.formatted?.discountedPrice
+      ? product.price?.formatted?.price
+      : undefined;
+
   const buildCatalogOptions = (): Record<string, unknown> | undefined => {
     if (!hasOptions) return undefined;
 
     if (product.manageVariants) {
-      const match = product.variants?.find(
-        (v) =>
-          v.choices &&
-          opts.every(
-            (opt) =>
-              opt.name && v.choices![opt.name] === selectedOptions[opt.name],
-          ),
-      );
-      return match?._id ? { variantId: match._id } : undefined;
+      return selectedVariant?._id
+        ? { variantId: selectedVariant._id }
+        : undefined;
     }
 
     return { options: selectedOptions };
@@ -51,6 +72,18 @@ export default function AddToCartSection({ product }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Price */}
+      <div className="flex items-baseline gap-3">
+        <span className="font-orbitron text-3xl font-bold text-cyber-cyan">
+          {price}
+        </span>
+        {wasPrice && (
+          <span className="font-orbitron text-lg text-cyber-muted line-through">
+            {wasPrice}
+          </span>
+        )}
+      </div>
+
       {/* Variants */}
       {opts.map((opt) => (
         <div key={opt.name} className="space-y-2">

@@ -1,8 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Truck, Shield, Star } from 'lucide-react';
-import { getProductBySlug } from '@/lib/products';
-import { stripHtml } from '@/lib/utils';
+import { getProductBySlug, getCategoryBreadcrumb } from '@/lib/products';
 import ProductGallery from '@/components/products/ProductGallery';
 import AddToCartSection from '@/components/products/AddToCartSection';
 
@@ -19,10 +18,10 @@ export default async function ProductPage({ params }: Props) {
     ...(product.media?.items?.slice(1, 5).map((i) => i.image?.url) ?? []),
   ].filter(Boolean) as string[];
 
-  const price = product.price?.formatted?.price ?? '£0.00';
-  const discountedPrice = product.price?.formatted?.discountedPrice;
   const inStock = product.stock?.inStock !== false;
-  const description = stripHtml(product.description ?? '');
+  const description = product.description ?? '';
+
+  const breadcrumb = await getCategoryBreadcrumb(product.collectionIds ?? []);
 
   return (
     <div className="min-h-screen bg-cyber-black">
@@ -43,26 +42,26 @@ export default async function ProductPage({ params }: Props) {
           {/* Info */}
           <div className="flex flex-col gap-6">
             {/* Category */}
-            {product.productType && (
-              <span className="cyber-tag text-cyber-cyan/60 border-cyber-cyan/20 text-[10px] self-start">
-                {product.productType}
-              </span>
+            {breadcrumb.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5 text-[0.65rem] font-orbitron tracking-widest uppercase">
+                {breadcrumb.map((cat, i) => (
+                  <span key={cat.categoryId} className="flex items-center gap-1.5">
+                    {i > 0 && <span className="text-cyber-muted/40">/</span>}
+                    <Link
+                      href={`/products?category=${cat.categorySlug}`}
+                      className="text-cyber-cyan/60 hover:text-cyber-cyan transition-colors"
+                    >
+                      {cat.categoryName}
+                    </Link>
+                  </span>
+                ))}
+              </div>
             )}
 
             {/* Name */}
             <h1 className="font-orbitron font-black text-2xl sm:text-3xl text-cyber-text leading-tight">
               {product.name}
             </h1>
-
-            {/* Price */}
-            <div className="flex items-baseline gap-3">
-              <span className="font-orbitron text-3xl font-bold text-cyber-cyan">
-                {discountedPrice ?? price}
-              </span>
-              {discountedPrice && (
-                <span className="font-orbitron text-lg text-cyber-muted line-through">{price}</span>
-              )}
-            </div>
 
             {/* Stock */}
             <div className="flex items-center gap-2">
@@ -74,9 +73,10 @@ export default async function ProductPage({ params }: Props) {
 
             {/* Description */}
             {description && (
-              <p className="text-cyber-muted text-sm leading-relaxed border-t border-cyber-cyan/8 pt-5">
-                {description}
-              </p>
+              <div
+                className="rich-text text-cyber-muted text-sm leading-relaxed border-t border-cyber-cyan/8 pt-5"
+                dangerouslySetInnerHTML={{ __html: description }}
+              />
             )}
 
             {/* Variants + quantity + add to cart (client) */}
@@ -85,7 +85,7 @@ export default async function ProductPage({ params }: Props) {
             {/* Trust row */}
             <div className="border-t border-cyber-cyan/8 pt-5 grid grid-cols-3 gap-4 text-center">
               {[
-                { icon: Truck, label: 'Next Day\nUK Delivery' },
+                { icon: Truck, label: 'Free & Express\nUK Delivery' },
                 { icon: Shield, label: 'Official\nWarranty' },
                 { icon: Star, label: 'Expert\nSupport' },
               ].map(({ icon: Icon, label }) => (
@@ -106,7 +106,7 @@ export default async function ProductPage({ params }: Props) {
                   <span className="text-cyber-muted group-open:rotate-90 transition-transform">›</span>
                 </summary>
                 <div
-                  className="px-5 pb-4 text-cyber-muted text-sm leading-relaxed border-t border-cyber-cyan/8"
+                  className="rich-text px-5 pb-4 text-cyber-muted text-sm leading-relaxed border-t border-cyber-cyan/8"
                   dangerouslySetInnerHTML={{ __html: sec.description ?? '' }}
                 />
               </details>

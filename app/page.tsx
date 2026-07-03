@@ -25,8 +25,8 @@ function ProductSkeleton() {
 const whyUs = [
   {
     icon: Zap,
-    title: "Next Day UK Delivery",
-    desc: "Order before 3pm for guaranteed next-day delivery across all major UK cities. Free on orders over £50.",
+    title: "Free & Express UK Delivery",
+    desc: "Choose free DHL shipping (3-8 business days) or DHL Express for £5 (2-5 business days) at checkout.",
   },
   {
     icon: CheckCircle,

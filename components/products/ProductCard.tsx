@@ -1,20 +1,26 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { Eye } from 'lucide-react';
-import type { WixProduct } from '@/lib/types';
-import { getProductImageUrl } from '@/lib/utils';
-import AddToCartButton from './AddToCartButton';
+import Image from "next/image";
+import Link from "next/link";
+import { Eye } from "lucide-react";
+import type { WixProduct } from "@/lib/types";
+import { getProductImageUrl } from "@/lib/utils";
+import AddToCartButton from "./AddToCartButton";
+import DebugLog from "../DebugLog";
 
 interface Props {
   product: WixProduct;
 }
 
 export default function ProductCard({ product }: Props) {
-  const imageUrl = getProductImageUrl(product.media?.mainMedia?.image?.url, 500, 500);
-  const price = product.price?.formatted?.price ?? '£0.00';
+  const imageUrl = getProductImageUrl(
+    product.media?.mainMedia?.image?.url,
+    500,
+    500,
+  );
+  const price = product.price?.formatted?.price ?? "£0.00";
   const discountedPrice = product.price?.formatted?.discountedPrice;
   const inStock = product.stock?.inStock !== false;
-  const hasDiscount = discountedPrice && product.price?.discountedPrice !== product.price?.price;
+  const hasDiscount =
+    discountedPrice && product.price?.discountedPrice !== product.price?.price;
 
   return (
     <Link
@@ -25,7 +31,7 @@ export default function ProductCard({ product }: Props) {
       <div className="relative aspect-square overflow-hidden bg-cyber-dark/70">
         <Image
           src={imageUrl}
-          alt={product.name ?? 'Product image'}
+          alt={product.name ?? "Product image"}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -53,7 +59,7 @@ export default function ProductCard({ product }: Props) {
           )}
         </div>
       </div>
-
+      <DebugLog label="tese" data={product} />
       {/* Content */}
       <div className="flex flex-col flex-1 p-4">
         {product.productType && (

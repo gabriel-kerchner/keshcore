@@ -1,12 +1,15 @@
-import ProductCard from './ProductCard';
-import type { WixProduct } from '@/lib/types';
+import ProductCard from "./ProductCard";
+import type { WixProduct } from "@/lib/types";
 
 interface ProductGridProps {
   products: WixProduct[];
   className?: string;
 }
 
-export default function ProductGrid({ products, className = '' }: ProductGridProps) {
+export default function ProductGrid({
+  products,
+  className = "",
+}: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="text-center py-24">

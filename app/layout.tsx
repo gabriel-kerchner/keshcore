@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s | KeshCore",
   },
   description:
-    "Premium gaming peripherals, PC components, SSDs, and accessories. Next-day delivery across the UK. Official warranties. Shop the future at KeshCore.",
+    "Premium gaming peripherals, PC components, SSDs, and accessories. Free & Express delivery across the UK. Official warranties. Shop the future at KeshCore.",
   keywords: [
     "gaming peripherals UK",
     "PC components UK",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     siteName: "KeshCore",
     title: "KeshCore — Premium Gaming & Tech Store UK",
     description:
-      "Premium gaming peripherals, PC components, SSDs, and accessories. Next-day UK delivery.",
+      "Premium gaming peripherals, PC components, SSDs, and accessories. Free & Express UK delivery.",
   },
   twitter: {
     card: "summary_large_image",

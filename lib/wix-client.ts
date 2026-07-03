@@ -1,7 +1,8 @@
 import Cookies from "js-cookie";
 import { WIX_SESSION_COOKIE } from "@/app/utils/constants";
 import { createClient, OAuthStrategy, type Tokens } from "@wix/sdk";
-import { products, collections } from "@wix/stores";
+import { products } from "@wix/stores";
+import { categories } from "@wix/categories";
 import { currentCart } from "@wix/ecom";
 import { redirects } from "@wix/redirects";
 
@@ -9,7 +10,7 @@ const clientId = process.env.NEXT_PUBLIC_WIX_CLIENT_ID!;
 
 export function createServerClient(tokens?: Tokens) {
   return createClient({
-    modules: { products, collections },
+    modules: { products, categories },
     auth: OAuthStrategy({ clientId, tokens }),
   });
 }

@@ -1,14 +1,12 @@
 import Link from "next/link";
 import { Zap, Mail } from "lucide-react";
 import NewsletterForm from "./NewsletterForm";
+import { categories, getCategoryHref } from "@/lib/categories";
 
 const links = {
   shop: [
     { href: "/products", label: "All Products" },
-    { href: "/products?category=gaming", label: "Gaming Peripherals" },
-    { href: "/products?category=pc-parts", label: "PC Components" },
-    { href: "/products?category=storage", label: "Storage & SSDs" },
-    { href: "/products?category=monitors", label: "Monitors" },
+    ...categories.map((cat) => ({ href: getCategoryHref(cat), label: cat.name })),
   ],
   support: [
     { href: "/faq", label: "FAQ" },

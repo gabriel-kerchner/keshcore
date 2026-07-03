@@ -1,7 +1,7 @@
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import ProductGrid from '@/components/products/ProductGrid';
-import { getProducts } from '@/lib/products';
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import ProductGrid from "@/components/products/ProductGrid";
+import { getProducts } from "@/lib/products";
 
 export default async function FeaturedProducts() {
   const products = await getProducts({ limit: 8 });
@@ -12,7 +12,6 @@ export default async function FeaturedProducts() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyber-cyan/[0.015] to-transparent pointer-events-none" />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-
         {/* Section header */}
         <div className="flex items-end justify-between mb-12">
           <div>
@@ -34,7 +33,6 @@ export default async function FeaturedProducts() {
             <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
-
         <ProductGrid products={products} />
 
         {/* Mobile view all */}

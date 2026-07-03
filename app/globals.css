@@ -201,6 +201,30 @@ body {
   background: linear-gradient(90deg, transparent, rgba(255, 45, 120, 0.4), transparent);
 }
 
+/* ─── Rich text (Wix description / info sections) ────────── */
+.rich-text p { margin-bottom: 0.75em; }
+.rich-text p:last-child { margin-bottom: 0; }
+.rich-text ul,
+.rich-text ol { margin: 0.5em 0 0.75em 1.25em; }
+.rich-text ul { list-style: disc; }
+.rich-text ol { list-style: decimal; }
+.rich-text li { margin-bottom: 0.25em; }
+.rich-text strong,
+.rich-text b { font-weight: 700; color: var(--text-primary); }
+.rich-text em,
+.rich-text i { font-style: italic; }
+.rich-text a { color: var(--neon-cyan); text-decoration: underline; }
+.rich-text h1,
+.rich-text h2,
+.rich-text h3,
+.rich-text h4 { font-weight: 700; color: var(--text-primary); margin: 0.75em 0 0.4em; }
+.rich-text blockquote {
+  border-left: 2px solid rgba(0, 245, 255, 0.3);
+  padding-left: 0.75em;
+  margin: 0.5em 0;
+  font-style: italic;
+}
+
 /* ─── Line clamp ─────────────────────────────────────────── */
 .line-clamp-2 {
   display: -webkit-box;
