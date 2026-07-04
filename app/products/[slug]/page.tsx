@@ -4,6 +4,7 @@ import { ArrowLeft, Truck, Shield, Star } from 'lucide-react';
 import { getProductBySlug, getCategoryBreadcrumb } from '@/lib/products';
 import ProductGallery from '@/components/products/ProductGallery';
 import AddToCartSection from '@/components/products/AddToCartSection';
+import ViewContentTracker from '@/components/analytics/ViewContentTracker';
 
 interface Props {
   params: { slug: string };
@@ -25,6 +26,15 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-cyber-black">
+      {product._id && (
+        <ViewContentTracker
+          contentId={product._id}
+          contentName={product.name ?? 'Product'}
+          value={product.price?.discountedPrice ?? product.price?.price}
+          currency={product.price?.currency}
+          category={breadcrumb[breadcrumb.length - 1]?.categoryName}
+        />
+      )}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Back */}
         <Link

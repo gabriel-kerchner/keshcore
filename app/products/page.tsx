@@ -1,25 +1,27 @@
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import ProductGrid from '@/components/products/ProductGrid';
-import DebugLog from '@/components/DebugLog';
-import { getProducts, getCollectionIdsBySlugs } from '@/lib/products';
-import { getCategoryName, getCategoryAndDescendantSlugs } from '@/lib/categories';
-import { SlidersHorizontal } from 'lucide-react';
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import ProductGrid from "@/components/products/ProductGrid";
+import { getProducts, getCollectionIdsBySlugs } from "@/lib/products";
+import {
+  getCategoryName,
+  getCategoryAndDescendantSlugs,
+} from "@/lib/categories";
+import { SlidersHorizontal } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: 'All Products',
+  title: "All Products",
   description:
-    'Shop our full range of gaming peripherals, PC components, SSDs, monitors and accessories. Free & Express UK delivery available.',
+    "Shop our full range of gaming peripherals, PC components, SSDs, monitors and accessories. Free & Express UK delivery available.",
 };
 
 export const revalidate = 60;
 
 const sortOptions = [
-  { value: 'newest', label: 'NEWEST' },
-  { value: 'best-sellers', label: 'BEST SELLERS' },
-  { value: 'price-asc', label: 'PRICE: LOW → HIGH' },
-  { value: 'price-desc', label: 'PRICE: HIGH → LOW' },
-  { value: 'name', label: 'NAME A–Z' },
+  { value: "newest", label: "NEWEST" },
+  { value: "best-sellers", label: "BEST SELLERS" },
+  { value: "price-asc", label: "PRICE: LOW → HIGH" },
+  { value: "price-desc", label: "PRICE: HIGH → LOW" },
+  { value: "name", label: "NAME A–Z" },
 ];
 
 interface SearchParams {
@@ -35,7 +37,7 @@ export default async function ProductsPage({
 }: {
   searchParams: SearchParams;
 }) {
-  const { category, sort = 'newest', q, sale, maxPrice } = searchParams;
+  const { category, sort = "newest", q, sale, maxPrice } = searchParams;
 
   const collectionIds = category
     ? await getCollectionIdsBySlugs(getCategoryAndDescendantSlugs(category))
@@ -47,19 +49,18 @@ export default async function ProductsPage({
       : await getProducts({ limit: 50, collectionIds });
 
   const heading = category
-    ? getCategoryName(category) ??
-      category.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+    ? (getCategoryName(category) ??
+      category.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()))
     : q
-    ? `Search: "${q}"`
-    : sale === 'true'
-    ? 'Sale'
-    : maxPrice
-    ? `Under £${maxPrice}`
-    : 'All Products';
+      ? `Search: "${q}"`
+      : sale === "true"
+        ? "Sale"
+        : maxPrice
+          ? `Under £${maxPrice}`
+          : "All Products";
 
   return (
     <div className="min-h-screen bg-cyber-black">
-      <DebugLog label="products" data={products} />
       {/* Page header */}
       <div className="relative py-16 border-b border-cyber-cyan/8 overflow-hidden">
         <div className="cyber-bg-grid absolute inset-0 opacity-50" />
@@ -68,7 +69,7 @@ export default async function ProductsPage({
           <div className="flex items-center gap-3 mb-3">
             <div className="h-px w-8 bg-cyber-cyan opacity-60" />
             <span className="font-orbitron text-[0.6rem] tracking-[0.35em] text-cyber-cyan/70 uppercase">
-              {category || sale === 'true' || maxPrice ? 'Category' : 'Shop'}
+              {category || sale === "true" || maxPrice ? "Category" : "Shop"}
             </span>
           </div>
           <h1 className="font-orbitron font-black text-3xl sm:text-4xl text-cyber-text">
@@ -76,7 +77,8 @@ export default async function ProductsPage({
           </h1>
           {products.length > 0 && (
             <p className="text-cyber-muted text-sm mt-2">
-              {products.length} {products.length === 1 ? 'product' : 'products'} found
+              {products.length} {products.length === 1 ? "product" : "products"}{" "}
+              found
             </p>
           )}
         </div>
@@ -87,17 +89,19 @@ export default async function ProductsPage({
         <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
           <div className="flex items-center gap-2 text-cyber-muted">
             <SlidersHorizontal className="w-4 h-4" />
-            <span className="font-orbitron text-xs tracking-widest">SORT BY</span>
+            <span className="font-orbitron text-xs tracking-widest">
+              SORT BY
+            </span>
           </div>
           <div className="flex gap-2 flex-wrap">
             {sortOptions.map(({ value, label }) => (
               <a
                 key={value}
-                href={`/products?${category ? `category=${category}&` : ''}sort=${value}`}
+                href={`/products?${category ? `category=${category}&` : ""}sort=${value}`}
                 className={`cyber-tag transition-colors cursor-pointer ${
                   sort === value
-                    ? 'text-cyber-cyan border-cyber-cyan/50'
-                    : 'text-cyber-muted/60 border-cyber-muted/20 hover:text-cyber-cyan hover:border-cyber-cyan/30'
+                    ? "text-cyber-cyan border-cyber-cyan/50"
+                    : "text-cyber-muted/60 border-cyber-muted/20 hover:text-cyber-cyan hover:border-cyber-cyan/30"
                 }`}
               >
                 {label}

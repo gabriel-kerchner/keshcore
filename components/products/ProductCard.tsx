@@ -4,7 +4,6 @@ import { Eye } from "lucide-react";
 import type { WixProduct } from "@/lib/types";
 import { getProductImageUrl } from "@/lib/utils";
 import AddToCartButton from "./AddToCartButton";
-import DebugLog from "../DebugLog";
 
 interface Props {
   product: WixProduct;
@@ -59,7 +58,6 @@ export default function ProductCard({ product }: Props) {
           )}
         </div>
       </div>
-      <DebugLog label="tese" data={product} />
       {/* Content */}
       <div className="flex flex-col flex-1 p-4">
         {product.productType && (

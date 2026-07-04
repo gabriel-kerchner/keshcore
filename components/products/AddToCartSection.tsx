@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ShoppingCart, Check } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { trackPixelEvent } from "@/lib/meta-pixel";
 import type { WixProduct } from "@/lib/types";
 
 interface Props {
@@ -51,6 +52,11 @@ export default function AddToCartSection({ product }: Props) {
       ? product.price?.formatted?.price
       : undefined;
 
+  const numericPrice = selectedVariant
+    ? selectedVariant.variant?.priceData?.discountedPrice ??
+      selectedVariant.variant?.priceData?.price
+    : product.price?.discountedPrice ?? product.price?.price;
+
   const buildCatalogOptions = (): Record<string, unknown> | undefined => {
     if (!hasOptions) return undefined;
 
@@ -66,6 +72,20 @@ export default function AddToCartSection({ product }: Props) {
   const handleAddToCart = async () => {
     if (!product._id || !allOptionsSelected) return;
     await addToCart(product._id, buildCatalogOptions(), quantity);
+    trackPixelEvent("AddToCart", {
+      content_ids: [product._id],
+      content_name: product.name,
+      content_type: "product",
+      value: numericPrice !== undefined ? numericPrice * quantity : undefined,
+      currency: product.price?.currency,
+      contents: [
+        {
+          id: product._id,
+          quantity,
+          item_price: numericPrice,
+        },
+      ],
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   };

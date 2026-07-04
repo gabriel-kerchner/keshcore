@@ -5,6 +5,7 @@ import { CartProvider } from "@/context/CartContext";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
+import MetaPixel from "@/components/analytics/MetaPixel";
 import { Analytics } from "@vercel/analytics/next";
 
 const orbitron = Orbitron({
@@ -72,6 +73,7 @@ export default function RootLayout({
           <Footer />
           <CartDrawer />
         </CartProvider>
+        <MetaPixel />
         <Analytics />
       </body>
     </html>

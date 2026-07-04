@@ -11,6 +11,7 @@ import {
 import { currentCart } from "@wix/ecom";
 import { getBrowserClient, persistTokens, getSiteUrl } from "@/lib/wix-client";
 import { WIX_STORES_APP_ID } from "@/app/utils/constants";
+import { trackPixelEvent } from "@/lib/meta-pixel";
 
 type Cart = currentCart.Cart;
 
@@ -132,6 +133,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
         });
 
       if (!checkoutId) throw new Error("No checkoutId returned");
+
+      const lineItems = cart?.lineItems ?? [];
+      const contentIds = lineItems
+        .map((item) => item.catalogReference?.catalogItemId)
+        .filter((id): id is string => Boolean(id));
+      const value = lineItems.reduce((acc, item) => {
+        const amt = parseFloat(item.price?.amount ?? "0");
+        return acc + amt * (item.quantity ?? 1);
+      }, 0);
+      trackPixelEvent("InitiateCheckout", {
+        content_ids: contentIds,
+        content_type: "product",
+        num_items: lineItems.reduce((acc, i) => acc + (i.quantity ?? 0), 0),
+        value,
+        currency: cart?.currency,
+      });
 
       const siteUrl = getSiteUrl();
       const { redirectSession } = await client.redirects.createRedirectSession({

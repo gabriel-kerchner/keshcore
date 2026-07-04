@@ -2,6 +2,7 @@
 
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { trackPixelEvent } from "@/lib/meta-pixel";
 import type { WixProduct } from "@/lib/types";
 
 interface Props {
@@ -28,6 +29,17 @@ export default function AddToCartButton({ product, inStock }: Props) {
       ? { variantId: singleVariantId }
       : undefined;
     await addToCart(product._id, catalogOptions, 1);
+
+    const numericPrice =
+      product.price?.discountedPrice ?? product.price?.price;
+    trackPixelEvent("AddToCart", {
+      content_ids: [product._id],
+      content_name: product.name,
+      content_type: "product",
+      value: numericPrice,
+      currency: product.price?.currency,
+      contents: [{ id: product._id, quantity: 1, item_price: numericPrice }],
+    });
   };
 
   return (
